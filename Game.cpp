@@ -2,6 +2,8 @@
 
 Game::Game()
 {
+	this->m_Window.setFramerateLimit(144);
+	this->m_Window.setVerticalSyncEnabled(false);
 }
 
 Game::~Game()
