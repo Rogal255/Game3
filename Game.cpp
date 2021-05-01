@@ -32,13 +32,13 @@ void Game::handleEvents()
 void Game::update()
 {
 	this->handleEvents();
+	this->player.update();
 }
 
 void Game::render()
 {
 	this->m_Window.clear();
-
-
+	player.render(&m_Window);
 	this->m_Window.display();
 }
 

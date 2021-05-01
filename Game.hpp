@@ -4,8 +4,10 @@
 
 class Game
 {
-	sf::RenderWindow m_Window{ sf::VideoMode(800, 600), "Game 3", sf::Style::Close | sf::Style::Titlebar };
+	sf::ContextSettings m_Settings{ 0U, 0U, 16U, 1U, 1U, 0U, false };
+	sf::RenderWindow m_Window{ sf::VideoMode(1200, 900), "Game 3", sf::Style::Close | sf::Style::Titlebar, m_Settings};
 	sf::Event m_Event;
+	Player player;
 
 	// Private methods
 	void handleEvents();
