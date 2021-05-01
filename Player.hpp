@@ -4,6 +4,12 @@
 
 class Player
 {
+	sf::Sprite m_Sprite;
+	sf::Texture m_Texture;
+
+	// Private methods
+	void initTexture();
+	void initSprite();
 
 public:
 	Player();
