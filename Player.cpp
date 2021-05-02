@@ -2,11 +2,11 @@
 
 Player::Player()
 {
-	// init texture
-	this->m_Texture.loadFromFile("./Textures/ship.png");
+}
 
-	//init sprite
-	this->m_Sprite.setTexture(this->m_Texture);
+void Player::setTexture(sf::Texture& t_Texture)
+{
+	this->m_Sprite.setTexture(t_Texture);
 	this->m_Sprite.setPosition(300.f, 300.f);
 	this->m_Sprite.setScale(0.15f, 0.15f);
 }
@@ -14,6 +14,13 @@ Player::Player()
 void Player::move(const float t_DirX, const float t_DirY)
 {
 	this->m_Sprite.move(this->m_Speed * t_DirX, this->m_Speed * t_DirY);
+}
+
+const sf::Vector2f Player::getGunPosition()
+{
+	sf::Vector2f position{ m_Sprite.getPosition() };
+	position.x += m_Sprite.getGlobalBounds().width / 2 - 5;
+	return position;
 }
 
 void Player::update()
