@@ -22,18 +22,19 @@ Game::~Game()
 void Game::updateBullets()
 {
 	// Fire bullets
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && m_GunCooldown.getElapsedTime().asMilliseconds() > 500)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && this->m_GunCooldown.getElapsedTime().asMilliseconds() > 500)
 	{
 		m_GunCooldown.restart();
 		sf::Vector2f shipGunPosition = player.getGunPosition();
-		m_Bullets.emplace_back(m_Textures["Bullet"], 0.f, -1.f, 10.f, shipGunPosition.x, shipGunPosition.y);
+		m_Bullets.emplace_back(this->m_Textures["Bullet"], 0.f, -1.f, 10.f, shipGunPosition.x, shipGunPosition.y);
 	}
 
-	for (size_t i{ 0 }; i < m_Bullets.size(); i++)
+	// Delete out of screen bullets
+	for (size_t i{ 0 }; i < this->m_Bullets.size(); ++i)
 	{
-		if (m_Bullets[i].getBounds().top < 0)
+		if (this->m_Bullets[i].getBounds().top + this->m_Bullets[i].getBounds().height < 0.f)
 		{
-			m_Bullets.erase(m_Bullets.cbegin() + i);
+			this->m_Bullets.erase(this->m_Bullets.cbegin() + i);
 		}
 	}
 
@@ -49,6 +50,40 @@ void Game::renderBullets()
 	for (auto& bullet : m_Bullets)
 	{
 		bullet.render(&m_Window);
+	}
+}
+
+void Game::updateEnemies()
+{
+	// Creating enemies
+	if (this->m_EnemySpawnClock.getElapsedTime().asMilliseconds() > m_EnemySpawnCooldown)
+	{
+		this->m_EnemySpawnCooldown = rand() % 1500 + 500;
+		this->m_EnemySpawnClock.restart();
+		this->m_Enemies.emplace_back(static_cast<float>(rand() % m_Window.getSize().x), -200.f);
+	}
+
+	// Delete out of screen enemies
+	for (size_t i{ 0 }; i < m_Enemies.size(); ++i)
+	{
+		if (this->m_Enemies[i].getBounds().top > this->m_Window.getSize().y)
+		{
+			this->m_Enemies.erase(this->m_Enemies.cbegin() + i);
+		}
+	}
+
+	// Update enemies
+	for (auto& enemy : m_Enemies)
+	{
+		enemy.update();
+	}
+}
+
+void Game::renderEnemies()
+{
+	for (auto& enemy : m_Enemies)
+	{
+		enemy.render(&m_Window);
 	}
 }
 
@@ -76,13 +111,15 @@ void Game::update()
 	this->handleEvents();
 	this->player.update();
 	this->updateBullets();
+	this->updateEnemies();
 }
 
 void Game::render()
 {
 	this->m_Window.clear();
-	player.render(&m_Window);
-	renderBullets();
+	this->player.render(&m_Window);
+	this->renderBullets();
+	this->renderEnemies();
 	this->m_Window.display();
 }
 
