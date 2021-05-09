@@ -3,7 +3,7 @@
 Game::Game()
 {
 	// Setting up window
-	//this->m_Window.setFramerateLimit(144);
+	this->m_Window.setFramerateLimit(144);
 	this->m_Window.setVerticalSyncEnabled(false);
 
 	// Setting up textures
