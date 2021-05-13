@@ -13,7 +13,8 @@ public:
 	// Public methods
 	void setTexture(sf::Texture& t_Texture);
 	void move(const float t_DirX, const float t_DirY);
-	const sf::Vector2f getGunPosition();
+	const sf::Vector2f getGunPosition() const;
+	const sf::FloatRect getBounds() const;
 	void update();
 	void render(sf::RenderTarget* t_pTarget);
 };

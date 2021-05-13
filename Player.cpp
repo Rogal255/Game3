@@ -16,11 +16,16 @@ void Player::move(const float t_DirX, const float t_DirY)
 	this->m_Sprite.move(this->m_Speed * t_DirX, this->m_Speed * t_DirY);
 }
 
-const sf::Vector2f Player::getGunPosition()
+const sf::Vector2f Player::getGunPosition() const
 {
 	sf::Vector2f position{ m_Sprite.getPosition() };
-	position.x += m_Sprite.getGlobalBounds().width / 2 - 5;
+	position.x += m_Sprite.getGlobalBounds().width / 2.f - 5.f;
 	return position;
+}
+
+const sf::FloatRect Player::getBounds() const
+{
+	return this->m_Sprite.getGlobalBounds();
 }
 
 void Player::update()

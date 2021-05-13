@@ -13,6 +13,17 @@ Game::Game()
 	m_Textures["Player"].loadFromFile("./Textures/ship.png");
 	m_Textures["Bullet"].loadFromFile("./Textures/bullet.png");
 	player.setTexture(m_Textures["Player"]);
+
+	// GUI
+	if (this->m_Font.loadFromFile("./fonts/font.ttf"))
+	{
+		std::cout << "Error loading font\n";
+	}
+	this->m_PointText.setFont(m_Font);
+	this->m_PointText.setCharacterSize(20);
+	this->m_PointText.setFillColor(sf::Color::White);
+	this->m_PointText.setPosition(10.f, 10.f);
+	this->m_PointText.setString("Points: 0");
 }
 
 Game::~Game()
@@ -34,7 +45,8 @@ void Game::updateBullets()
 	{
 		if (this->m_Bullets[i].getBounds().top + this->m_Bullets[i].getBounds().height < 0.f)
 		{
-			this->m_Bullets.erase(this->m_Bullets.cbegin() + i);
+			this->m_Bullets.erase(this->m_Bullets.begin() + i);
+			--i;
 		}
 	}
 
@@ -63,12 +75,27 @@ void Game::updateEnemies()
 		this->m_Enemies.emplace_back(static_cast<float>(rand() % m_Window.getSize().x), -200.f);
 	}
 
-	// Delete out of screen enemies
+	// Delete enemies
 	for (size_t i{ 0 }; i < m_Enemies.size(); ++i)
-	{
+	{	
+		// Deleting out of screen enemies
 		if (this->m_Enemies[i].getBounds().top > this->m_Window.getSize().y)
 		{
-			this->m_Enemies.erase(this->m_Enemies.cbegin() + i);
+			this->m_Enemies.erase(this->m_Enemies.begin() + i);
+			--i;
+			continue;
+		}
+
+		// Deleting hit enemies and bullets
+		for (size_t j{ 0 }; j < m_Bullets.size(); ++j)
+		{
+			if (this->m_Enemies[i].getBounds().intersects(m_Bullets[j].getBounds()))
+			{
+				this->m_Enemies.erase(this->m_Enemies.begin() + i);
+				this->m_Bullets.erase(this->m_Bullets.begin() + j);
+				--i;
+				break;
+			}
 		}
 	}
 
@@ -106,12 +133,22 @@ void Game::handleEvents()
 	}
 }
 
+void Game::updateGUI()
+{
+}
+
+void Game::renderGUI()
+{
+	this->m_Window.draw(m_PointText);
+}
+
 void Game::update()
 {
 	this->handleEvents();
 	this->player.update();
 	this->updateBullets();
 	this->updateEnemies();
+	this->updateGUI();
 }
 
 void Game::render()
@@ -120,6 +157,7 @@ void Game::render()
 	this->player.render(&m_Window);
 	this->renderBullets();
 	this->renderEnemies();
+	this->renderGUI();
 	this->m_Window.display();
 }
 
