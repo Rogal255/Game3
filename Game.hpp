@@ -25,7 +25,11 @@ class Game
 	sf::Font m_Font;
 	sf::Text m_PointText;
 
+	// World
+	sf::Sprite m_WorldBackground;
+
 	// Private methods
+	void renderWorld();
 	void updateBullets();
 	void renderBullets();
 	void updateEnemies();

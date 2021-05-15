@@ -1,5 +1,4 @@
 #include "Game.hpp"
-
 #include <time.h>
 
 int main()

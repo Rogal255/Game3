@@ -28,7 +28,7 @@ const sf::FloatRect Player::getBounds() const
 	return this->m_Sprite.getGlobalBounds();
 }
 
-void Player::update()
+void Player::update(sf::RenderTarget* t_pTarget)
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
@@ -45,6 +45,28 @@ void Player::update()
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		this->move(1.f, 0.f);
+	}
+
+	// Screen edge collisions
+	sf::Vector2u screenSize = t_pTarget->getSize();
+	sf::FloatRect playerRect = m_Sprite.getGlobalBounds();
+
+	if (playerRect.top < 0.f)
+	{
+		m_Sprite.setPosition(playerRect.left, 0.f);
+	}
+	else if (playerRect.top + playerRect.height > static_cast<float>(screenSize.y))
+	{
+		m_Sprite.setPosition(playerRect.left, static_cast<float>(screenSize.y) - playerRect.height);
+	}
+
+	if (playerRect.left > static_cast<float>(screenSize.x))
+	{
+		m_Sprite.setPosition(-playerRect.width, playerRect.top);
+	}
+	else if (playerRect.left < -playerRect.width)
+	{
+		m_Sprite.setPosition(static_cast<float>(screenSize.x), playerRect.top);
 	}
 }
 

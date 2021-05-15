@@ -10,12 +10,14 @@ Game::Game()
 	sf::Texture texture;
 	m_Textures.emplace("Player", texture);
 	m_Textures.emplace("Bullet", texture);
+	m_Textures.emplace("Background", texture);
 	m_Textures["Player"].loadFromFile("./Textures/ship.png");
 	m_Textures["Bullet"].loadFromFile("./Textures/bullet.png");
+	m_Textures["Background"].loadFromFile("./Textures/background.jpg");
 	player.setTexture(m_Textures["Player"]);
 
 	// GUI
-	if (this->m_Font.loadFromFile("./fonts/font.ttf"))
+	if (!this->m_Font.loadFromFile("./fonts/font.ttf"))
 	{
 		std::cout << "Error loading font\n";
 	}
@@ -24,10 +26,18 @@ Game::Game()
 	this->m_PointText.setFillColor(sf::Color::White);
 	this->m_PointText.setPosition(10.f, 10.f);
 	this->m_PointText.setString("Points: 0");
+
+	// World
+	this->m_WorldBackground.setTexture(this->m_Textures["Background"]);
 }
 
 Game::~Game()
 {
+}
+
+void Game::renderWorld()
+{
+	this->m_Window.draw(this->m_WorldBackground);
 }
 
 void Game::updateBullets()
@@ -108,9 +118,9 @@ void Game::updateEnemies()
 
 void Game::renderEnemies()
 {
-	for (auto& enemy : m_Enemies)
+	for (auto& enemy : this->m_Enemies)
 	{
-		enemy.render(&m_Window);
+		enemy.render(&this->m_Window);
 	}
 }
 
@@ -145,7 +155,7 @@ void Game::renderGUI()
 void Game::update()
 {
 	this->handleEvents();
-	this->player.update();
+	this->player.update(&m_Window);
 	this->updateBullets();
 	this->updateEnemies();
 	this->updateGUI();
@@ -154,6 +164,7 @@ void Game::update()
 void Game::render()
 {
 	this->m_Window.clear();
+	this->renderWorld();
 	this->player.render(&m_Window);
 	this->renderBullets();
 	this->renderEnemies();
