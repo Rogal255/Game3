@@ -5,6 +5,7 @@
 #include "Enemy.hpp"
 #include <map>
 #include <iostream>
+#include <sstream>
 
 class Game
 {
@@ -17,13 +18,17 @@ class Game
 
 	// Resources
 	std::map<std::string, sf::Texture> m_Textures;
-	Player player;
+	Player m_Player;
 	std::vector<Bullet> m_Bullets;
 	std::vector<Enemy> m_Enemies;
 
 	// GUI
 	sf::Font m_Font;
 	sf::Text m_PointText;
+	uint16_t m_Points{ 0 };
+	sf::RectangleShape m_PlayerHpBar;
+	sf::RectangleShape m_PlayerHpBarBack;
+	sf::Text m_GameOverText;
 
 	// World
 	sf::Sprite m_WorldBackground;

@@ -9,12 +9,14 @@ Game::Game()
 	// Setting up textures
 	sf::Texture texture;
 	m_Textures.emplace("Player", texture);
+	m_Textures.emplace("Asteroid", texture);
 	m_Textures.emplace("Bullet", texture);
 	m_Textures.emplace("Background", texture);
 	m_Textures["Player"].loadFromFile("./Textures/ship.png");
+	m_Textures["Asteroid"].loadFromFile("./Textures/asteroid.png");
 	m_Textures["Bullet"].loadFromFile("./Textures/bullet.png");
 	m_Textures["Background"].loadFromFile("./Textures/background.jpg");
-	player.setTexture(m_Textures["Player"]);
+	m_Player.setTexture(m_Textures["Player"]);
 
 	// GUI
 	if (!this->m_Font.loadFromFile("./fonts/font.ttf"))
@@ -26,6 +28,18 @@ Game::Game()
 	this->m_PointText.setFillColor(sf::Color::White);
 	this->m_PointText.setPosition(10.f, 10.f);
 	this->m_PointText.setString("Points: 0");
+	this->m_PointText.setFillColor(sf::Color::White);
+	this->m_GameOverText.setFont(m_Font);
+	this->m_GameOverText.setCharacterSize(100);
+	this->m_GameOverText.setString("GAME OVER");
+	this->m_GameOverText.setPosition(
+		(this->m_Window.getSize().x / 2.f - this->m_GameOverText.getGlobalBounds().width / 2.f),
+		(this->m_Window.getSize().y / 2.f - this->m_GameOverText.getGlobalBounds().height / 2.f));
+	this->m_PlayerHpBar.setSize(sf::Vector2f(30.f, 25.f));
+	this->m_PlayerHpBar.setFillColor(sf::Color::Red);
+	this->m_PlayerHpBar.setPosition(10.f, 40.f);
+	this->m_PlayerHpBarBack = this->m_PlayerHpBar;
+	this->m_PlayerHpBarBack.setFillColor(sf::Color(25, 25, 25, 200));
 
 	// World
 	this->m_WorldBackground.setTexture(this->m_Textures["Background"]);
@@ -46,7 +60,7 @@ void Game::updateBullets()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && this->m_GunCooldown.getElapsedTime().asMilliseconds() > 500)
 	{
 		m_GunCooldown.restart();
-		sf::Vector2f shipGunPosition = player.getGunPosition();
+		sf::Vector2f shipGunPosition = m_Player.getGunPosition();
 		m_Bullets.emplace_back(this->m_Textures["Bullet"], 0.f, -1.f, 10.f, shipGunPosition.x, shipGunPosition.y);
 	}
 
@@ -82,7 +96,7 @@ void Game::updateEnemies()
 	{
 		this->m_EnemySpawnCooldown = rand() % 1500 + 500;
 		this->m_EnemySpawnClock.restart();
-		this->m_Enemies.emplace_back(static_cast<float>(rand() % m_Window.getSize().x), -200.f);
+		this->m_Enemies.emplace_back(static_cast<float>(rand() % m_Window.getSize().x), -200.f, m_Textures["Asteroid"]);
 	}
 
 	// Delete enemies
@@ -96,11 +110,26 @@ void Game::updateEnemies()
 			continue;
 		}
 
+		// Detecting collisions with the player
+		if (this->m_Player.getBounds().intersects(this->m_Enemies[i].getBounds()))
+		{
+			this->m_Player.takeDamage(1);
+			if (this->m_Points == 65535)
+			{
+				this->m_Points = 0;
+			}
+
+			this->m_Enemies.erase(this->m_Enemies.begin() + i);
+			--i;
+			continue;
+		}
+
 		// Deleting hit enemies and bullets
 		for (size_t j{ 0 }; j < m_Bullets.size(); ++j)
 		{
 			if (this->m_Enemies[i].getBounds().intersects(m_Bullets[j].getBounds()))
 			{
+				this->m_Points += this->m_Enemies[i].getPoints();
 				this->m_Enemies.erase(this->m_Enemies.begin() + i);
 				this->m_Bullets.erase(this->m_Bullets.begin() + j);
 				--i;
@@ -145,30 +174,44 @@ void Game::handleEvents()
 
 void Game::updateGUI()
 {
+	std::stringstream ss;
+	ss << "Points: " << this->m_Points;
+	this->m_PointText.setString(ss.str());
+	this->m_PlayerHpBar.setSize(sf::Vector2f(300.f *
+		(static_cast<float>(this->m_Player.getHp()) / (static_cast<float>(this->m_Player.getHpMax()))),
+		this->m_PlayerHpBar.getSize().y));
 }
 
 void Game::renderGUI()
 {
 	this->m_Window.draw(m_PointText);
+	this->m_Window.draw(m_PlayerHpBarBack);
+	this->m_Window.draw(m_PlayerHpBar);
 }
 
 void Game::update()
 {
 	this->handleEvents();
-	this->player.update(&m_Window);
-	this->updateBullets();
-	this->updateEnemies();
-	this->updateGUI();
+	if (this->m_Player.getHp() > 0)
+	{
+		this->m_Player.update(&m_Window);
+		this->updateBullets();
+		this->updateEnemies();
+		this->updateGUI();
+	}
 }
 
 void Game::render()
 {
 	this->m_Window.clear();
 	this->renderWorld();
-	this->player.render(&m_Window);
+	this->m_Player.render(&m_Window);
 	this->renderBullets();
 	this->renderEnemies();
 	this->renderGUI();
+	if (this->m_Player.getHp() == 0) {
+		this->m_Window.draw(m_GameOverText);
+	}
 	this->m_Window.display();
 }
 

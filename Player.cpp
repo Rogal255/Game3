@@ -4,6 +4,25 @@ Player::Player()
 {
 }
 
+const int & Player::getHp() const
+{
+	return this->m_Hp;
+}
+
+const int & Player::getHpMax() const
+{
+	return this->m_HpMax;
+}
+
+void Player::takeDamage(const int t_Damage)
+{
+	this->m_Hp -= t_Damage;
+	if (this->m_Hp < 0)
+	{
+		this->m_Hp = 0;
+	}
+}
+
 void Player::setTexture(sf::Texture& t_Texture)
 {
 	this->m_Sprite.setTexture(t_Texture);
