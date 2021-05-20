@@ -3,14 +3,15 @@
 Enemy::Enemy(float t_PosX, float t_PosY, sf::Texture& t_Texture)
 {
 	this->m_Sprite.setTexture(t_Texture);
-	this->m_Sprite.setPosition(t_PosX, t_PosY);
 	this->m_Sprite.setOrigin(this->m_Sprite.getLocalBounds().width / 2, this->m_Sprite.getLocalBounds().height / 2);
+	this->m_Sprite.setPosition(t_PosX, t_PosY);
 	this->m_Rotation = static_cast<float>(rand() % 20 / 10.f) - 1.f;
 }
 
-const sf::FloatRect Enemy::getBounds()
+const sf::FloatRect Enemy::getBounds() const
 {
-	return m_Sprite.getGlobalBounds();
+	sf::FloatRect globalBounds = m_Sprite.getGlobalBounds();
+	return sf::FloatRect(globalBounds.left + 23.f, globalBounds.top, globalBounds.width - 46.f, globalBounds.height - 23.f);
 }
 
 const uint16_t & Enemy::getPoints()

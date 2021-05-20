@@ -15,6 +15,8 @@ class Game
 	sf::Clock m_GunCooldown;
 	sf::Clock m_EnemySpawnClock;
 	uint16_t m_EnemySpawnCooldown{ 0 };
+	float m_LastEnemyPosX{ 0.f };
+	float m_NewEnemyPosX{ 0.f };
 
 	// Resources
 	std::map<std::string, sf::Texture> m_Textures;

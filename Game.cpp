@@ -10,11 +10,11 @@ Game::Game()
 	sf::Texture texture;
 	m_Textures.emplace("Player", texture);
 	m_Textures.emplace("Asteroid", texture);
-	m_Textures.emplace("Bullet", texture);
+	m_Textures.emplace("Missle", texture);
 	m_Textures.emplace("Background", texture);
 	m_Textures["Player"].loadFromFile("./Textures/ship.png");
 	m_Textures["Asteroid"].loadFromFile("./Textures/asteroid.png");
-	m_Textures["Bullet"].loadFromFile("./Textures/bullet.png");
+	m_Textures["Missle"].loadFromFile("./Textures/missle.png");
 	m_Textures["Background"].loadFromFile("./Textures/background.jpg");
 	m_Player.setTexture(m_Textures["Player"]);
 
@@ -61,7 +61,7 @@ void Game::updateBullets()
 	{
 		m_GunCooldown.restart();
 		sf::Vector2f shipGunPosition = m_Player.getGunPosition();
-		m_Bullets.emplace_back(this->m_Textures["Bullet"], 0.f, -1.f, 10.f, shipGunPosition.x, shipGunPosition.y);
+		m_Bullets.emplace_back(this->m_Textures["Missle"], 0.f, -1.f, 1.f, shipGunPosition.x, shipGunPosition.y);
 	}
 
 	// Delete out of screen bullets
@@ -96,7 +96,11 @@ void Game::updateEnemies()
 	{
 		this->m_EnemySpawnCooldown = rand() % 1500 + 500;
 		this->m_EnemySpawnClock.restart();
-		this->m_Enemies.emplace_back(static_cast<float>(rand() % m_Window.getSize().x), -200.f, m_Textures["Asteroid"]);
+		do {
+			this->m_NewEnemyPosX = static_cast<float>(rand() % (m_Window.getSize().x - 200)) + 100.f;
+		} while (this->m_NewEnemyPosX < this->m_LastEnemyPosX + 100.f && this->m_NewEnemyPosX > this->m_LastEnemyPosX - 100.f);
+		this->m_Enemies.emplace_back(this->m_NewEnemyPosX, -200.f, m_Textures["Asteroid"]);
+		this->m_LastEnemyPosX = this->m_NewEnemyPosX;
 	}
 
 	// Delete enemies

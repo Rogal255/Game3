@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+class Game;
+
 class Enemy
 {
 	sf::Sprite m_Sprite;
@@ -15,7 +17,7 @@ class Enemy
 
 public:
 	Enemy(float t_PosX, float t_PosY, sf::Texture& t_Texture);
-	const sf::FloatRect getBounds();
+	const sf::FloatRect getBounds() const;
 	const uint16_t& getPoints();
 	void update();
 	void render(sf::RenderTarget* t_pTarget);
