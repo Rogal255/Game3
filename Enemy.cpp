@@ -1,6 +1,7 @@
 #include "Enemy.hpp"
 #include <iostream>
 
+
 Enemy::Enemy(float t_PosX, float t_PosY, sf::Texture& t_TextureEnemy, sf::Texture& t_TextureExplosion)
 {
 	this->m_SpriteEnemy.setTexture(t_TextureEnemy);
@@ -19,9 +20,9 @@ Enemy::Enemy(float t_PosX, float t_PosY, sf::Texture& t_TextureEnemy, sf::Textur
 	this->m_Frames.at(7) = sf::IntRect(966, 0, 128, 128);
 	this->m_Frames.at(8) = sf::IntRect(1104, 0, 128, 128);
 	this->m_Frames.at(9) = sf::IntRect(1242, 0, 128, 128);
-	this->m_ItAnimation = m_Frames.begin();
+
 	this->m_SpriteExplosion.setTexture(t_TextureExplosion);
-	this->m_SpriteExplosion.setTextureRect(*this->m_ItAnimation);
+	this->m_SpriteExplosion.setTextureRect(m_Frames[0]);
 }
 
 const sf::FloatRect Enemy::getBounds() const
@@ -55,16 +56,14 @@ void Enemy::update()
 	}
 	else
 	{
-		if (this->m_ItAnimation == this->m_Frames.begin() + 10)
+		if (this->m_CurrentFrame == m_Frames.size())
 		{
 			this->m_IsDead = true;
-			std::cout << "dead\n";
 		}
 		else if (this->m_AnimationClock.getElapsedTime().asMilliseconds() > 100)
 		{
 			this->m_AnimationClock.restart();
-			this->m_SpriteExplosion.setTextureRect(*this->m_ItAnimation++);
-			std::cout << m_ItAnimation->left << " != " << m_Frames.end()->left << "\n";
+			this->m_SpriteExplosion.setTextureRect(m_Frames[m_CurrentFrame++]);
 		}
 	}
 }
@@ -77,6 +76,9 @@ void Enemy::render(sf::RenderTarget * t_pTarget)
 	}
 	else
 	{
-		t_pTarget->draw(this->m_SpriteExplosion);
+		if (!m_IsDead)
+		{
+			t_pTarget->draw(this->m_SpriteExplosion);
+		}
 	}
 }

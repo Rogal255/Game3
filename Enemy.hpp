@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <array>
+#include <iterator>
 
 class Enemy
 {
@@ -17,7 +18,7 @@ class Enemy
 	bool m_Hit{ false };
 	sf::Sprite m_SpriteExplosion;
 	std::array<sf::IntRect, 10> m_Frames;
-	std::array<sf::IntRect, 10>::iterator m_ItAnimation;
+	uint8_t m_CurrentFrame{ 0 };
 	sf::Clock m_AnimationClock;
 
 

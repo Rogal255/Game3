@@ -45,6 +45,9 @@ Game::Game()
 
 	// World
 	this->m_WorldBackground.setTexture(this->m_Textures["Background"]);
+
+	// Test
+	m_Enemies.reserve(1000);
 }
 
 Game::~Game()
