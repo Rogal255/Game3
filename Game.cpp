@@ -11,10 +11,12 @@ Game::Game()
 	m_Textures.emplace("Player", texture);
 	m_Textures.emplace("Asteroid", texture);
 	m_Textures.emplace("Missle", texture);
+	m_Textures.emplace("Explosion", texture);
 	m_Textures.emplace("Background", texture);
 	m_Textures["Player"].loadFromFile("./Textures/ship.png");
 	m_Textures["Asteroid"].loadFromFile("./Textures/asteroid.png");
 	m_Textures["Missle"].loadFromFile("./Textures/missle.png");
+	m_Textures["Explosion"].loadFromFile("./Textures/explosion.png");
 	m_Textures["Background"].loadFromFile("./Textures/background.jpg");
 	m_Player.setTexture(m_Textures["Player"]);
 
@@ -99,7 +101,7 @@ void Game::updateEnemies()
 		do {
 			this->m_NewEnemyPosX = static_cast<float>(rand() % (m_Window.getSize().x - 200)) + 100.f;
 		} while (this->m_NewEnemyPosX < this->m_LastEnemyPosX + 100.f && this->m_NewEnemyPosX > this->m_LastEnemyPosX - 100.f);
-		this->m_Enemies.emplace_back(this->m_NewEnemyPosX, -200.f, m_Textures["Asteroid"]);
+		this->m_Enemies.emplace_back(this->m_NewEnemyPosX, -200.f, m_Textures["Asteroid"], m_Textures["Explosion"]);
 		this->m_LastEnemyPosX = this->m_NewEnemyPosX;
 	}
 
@@ -123,8 +125,7 @@ void Game::updateEnemies()
 				this->m_Points = 0;
 			}
 
-			this->m_Enemies.erase(this->m_Enemies.begin() + i);
-			--i;
+			this->m_Enemies[i].hit();
 			continue;
 		}
 

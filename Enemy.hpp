@@ -1,12 +1,11 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-
-class Game;
+#include <array>
 
 class Enemy
 {
-	sf::Sprite m_Sprite;
+	sf::Sprite m_SpriteEnemy;
 	int m_Type{ 0 };
 	int m_HpMax{ 10 };
 	int m_Hp{ m_HpMax };
@@ -15,10 +14,20 @@ class Enemy
 	float m_Speed{ 1.f };
 	float m_Rotation{ 0.f };
 
+	bool m_Hit{ false };
+	sf::Sprite m_SpriteExplosion;
+	std::array<sf::IntRect, 10> m_Frames;
+	std::array<sf::IntRect, 10>::iterator m_ItAnimation;
+	sf::Clock m_AnimationClock;
+
+
 public:
-	Enemy(float t_PosX, float t_PosY, sf::Texture& t_Texture);
+	bool m_IsDead{ false };
+
+	Enemy(float t_PosX, float t_PosY, sf::Texture& t_TextureEnemy, sf::Texture& t_TextureExplosion);
 	const sf::FloatRect getBounds() const;
 	const uint16_t& getPoints();
+	void hit();
 	void update();
 	void render(sf::RenderTarget* t_pTarget);
 };
